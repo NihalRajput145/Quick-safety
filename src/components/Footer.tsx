@@ -26,17 +26,14 @@ export function Footer({ onNavigate }: FooterProps) {
               Your trusted partner for professional home and safety services. Available 24/7 for your peace of mind.
             </p>
             <div className="flex gap-4">
-              <a href="#" className="p-2 rounded-full hover:bg-white/10 transition-colors duration-300">
+              <a href="https://www.facebook.com/share/16RLQfK5Bf/" className="p-2 rounded-full hover:bg-white/10 transition-colors duration-300">
                 <Facebook className="w-5 h-5" />
               </a>
               <a href="#" className="p-2 rounded-full hover:bg-white/10 transition-colors duration-300">
                 <Twitter className="w-5 h-5" />
               </a>
-              <a href="#" className="p-2 rounded-full hover:bg-white/10 transition-colors duration-300">
+              <a href="https://www.instagram.com/nirajkumar65542?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" className="p-2 rounded-full hover:bg-white/10 transition-colors duration-300">
                 <Instagram className="w-5 h-5" />
-              </a>
-              <a href="#" className="p-2 rounded-full hover:bg-white/10 transition-colors duration-300">
-                <Linkedin className="w-5 h-5" />
               </a>
             </div>
           </div>
