@@ -1,6 +1,9 @@
 import { Shield, Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import Logo from "../img/logo.png";
+
+
 
 interface NavbarProps {
   currentPage: string;
@@ -23,16 +26,16 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
-          <div 
+          <div
             className="flex items-center gap-3 cursor-pointer"
             onClick={() => onNavigate('home')}
           >
-            <div className="relative">
-              <Shield className="w-10 h-10" style={{ color: '#1d3557' }} fill="#1d3557" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-2 h-2 rounded-full bg-white"></div>
-              </div>
-            </div>
+            <img
+              src={Logo}
+              alt="Quick Safety Logo"
+              className="w-12 h-12 object-contain"
+            />
+
             <span className="font-bold text-xl" style={{ color: '#1d3557' }}>
               Quick Safety Service
             </span>
@@ -45,7 +48,7 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
                 key={item.id}
                 onClick={() => onNavigate(item.id)}
                 className="relative transition-colors duration-300 hover:opacity-80"
-                style={{ 
+                style={{
                   color: currentPage === item.id ? '#1d3557' : '#457b9d'
                 }}
               >
@@ -62,7 +65,7 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
             <button
               onClick={() => onNavigate('worker-signup')}
               className="px-6 py-2.5 rounded-lg border-2 transition-all duration-300 hover:shadow-lg"
-              style={{ 
+              style={{
                 borderColor: '#1d3557',
                 color: '#1d3557'
               }}
@@ -123,7 +126,7 @@ export function Navbar({ currentPage, onNavigate }: NavbarProps) {
                   setMobileMenuOpen(false);
                 }}
                 className="block w-full px-4 py-3 rounded-lg border-2"
-                style={{ 
+                style={{
                   borderColor: '#1d3557',
                   color: '#1d3557'
                 }}

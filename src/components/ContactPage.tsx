@@ -1,6 +1,7 @@
 import { motion } from 'motion/react';
 import { useState } from 'react';
 import { Phone, Mail, MapPin, Clock, Send } from 'lucide-react';
+import emailjs from "@emailjs/browser";
 
 export function ContactPage() {
   const [formData, setFormData] = useState({
@@ -14,20 +15,43 @@ export function ContactPage() {
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitted(true);
-    setTimeout(() => {
-      setSubmitted(false);
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        subject: '',
-        message: ''
-      });
-    }, 3000);
-  };
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  setSubmitted(true);
+
+  try {
+    const response = await fetch("https://formspree.io/f/xkgllraq", {
+      method: "POST",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(formData)
+    });
+
+    setFormData({
+      name: "",
+      email: "",
+      phone: "",
+      subject: "",
+      message: ""
+    });
+
+    if (!response.ok) {
+      console.error("Formspree error", await response.text());
+    }
+
+  } catch (err) {
+    console.error("Network error:", err);
+  }
+
+  // Hide success screen after delay
+  setTimeout(() => {
+    setSubmitted(false);
+  }, 3000);
+};
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
@@ -91,7 +115,7 @@ export function ContactPage() {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300"
               >
-                <div 
+                <div
                   className="w-14 h-14 rounded-full flex items-center justify-center mb-4"
                   style={{ backgroundColor: '#a8dadc' }}
                 >
@@ -141,14 +165,17 @@ export function ContactPage() {
                   Send Us a Message
                 </h3>
 
+                {/* form fields remain unchanged */}
+                {/* ------------------------------ */}
+
                 <div className="space-y-6">
+                  {/* Name */}
                   <div className="relative">
                     <label
-                      className={`absolute left-4 transition-all duration-300 pointer-events-none ${
-                        focusedField === 'name' || formData.name
+                      className={`absolute left-4 transition-all duration-300 pointer-events-none ${focusedField === 'name' || formData.name
                           ? 'top-2 text-xs'
                           : 'top-5 text-base'
-                      }`}
+                        }`}
                       style={{ color: focusedField === 'name' ? '#1d3557' : '#457b9d' }}
                     >
                       Your Name
@@ -169,13 +196,13 @@ export function ContactPage() {
                     />
                   </div>
 
+                  {/* Email */}
                   <div className="relative">
                     <label
-                      className={`absolute left-4 transition-all duration-300 pointer-events-none ${
-                        focusedField === 'email' || formData.email
+                      className={`absolute left-4 transition-all duration-300 pointer-events-none ${focusedField === 'email' || formData.email
                           ? 'top-2 text-xs'
                           : 'top-5 text-base'
-                      }`}
+                        }`}
                       style={{ color: focusedField === 'email' ? '#1d3557' : '#457b9d' }}
                     >
                       Email Address
@@ -196,13 +223,13 @@ export function ContactPage() {
                     />
                   </div>
 
+                  {/* Phone */}
                   <div className="relative">
                     <label
-                      className={`absolute left-4 transition-all duration-300 pointer-events-none ${
-                        focusedField === 'phone' || formData.phone
+                      className={`absolute left-4 transition-all duration-300 pointer-events-none ${focusedField === 'phone' || formData.phone
                           ? 'top-2 text-xs'
                           : 'top-5 text-base'
-                      }`}
+                        }`}
                       style={{ color: focusedField === 'phone' ? '#1d3557' : '#457b9d' }}
                     >
                       Phone Number
@@ -223,13 +250,13 @@ export function ContactPage() {
                     />
                   </div>
 
+                  {/* Subject */}
                   <div className="relative">
                     <label
-                      className={`absolute left-4 transition-all duration-300 pointer-events-none ${
-                        focusedField === 'subject' || formData.subject
+                      className={`absolute left-4 transition-all duration-300 pointer-events-none ${focusedField === 'subject' || formData.subject
                           ? 'top-2 text-xs'
                           : 'top-5 text-base'
-                      }`}
+                        }`}
                       style={{ color: focusedField === 'subject' ? '#1d3557' : '#457b9d' }}
                     >
                       Subject
@@ -250,13 +277,13 @@ export function ContactPage() {
                     />
                   </div>
 
+                  {/* Message */}
                   <div className="relative">
                     <label
-                      className={`absolute left-4 transition-all duration-300 pointer-events-none ${
-                        focusedField === 'message' || formData.message
+                      className={`absolute left-4 transition-all duration-300 pointer-events-none ${focusedField === 'message' || formData.message
                           ? 'top-2 text-xs'
                           : 'top-5 text-base'
-                      }`}
+                        }`}
                       style={{ color: focusedField === 'message' ? '#1d3557' : '#457b9d' }}
                     >
                       Your Message
@@ -277,6 +304,7 @@ export function ContactPage() {
                     />
                   </div>
 
+                  {/* Submit */}
                   <motion.button
                     type="submit"
                     whileHover={{ scale: 1.02 }}
@@ -299,7 +327,7 @@ export function ContactPage() {
             transition={{ duration: 0.6 }}
             className="bg-white rounded-2xl overflow-hidden shadow-xl h-full min-h-[600px]"
           >
-            <div 
+            <div
               className="w-full h-full flex items-center justify-center"
               style={{ backgroundColor: '#a8dadc' }}
             >

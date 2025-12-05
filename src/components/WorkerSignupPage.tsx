@@ -1,5 +1,6 @@
 import { motion } from 'motion/react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { User, Phone, Mail, MapPin, Briefcase, Award, FileText, Upload, CheckCircle, CreditCard, Image as ImageIcon } from 'lucide-react';
 
 export function WorkerSignupPage() {
@@ -49,9 +50,85 @@ export function WorkerSignupPage() {
     'On-call'
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const requiredFields = [
+      { name: 'Full Name', value: formData.fullName },
+      { name: 'Phone', value: formData.phone },
+      { name: 'Email', value: formData.email },
+      { name: 'City', value: formData.city },
+      { name: 'Service Type', value: formData.serviceType },
+      { name: 'Experience', value: formData.experience },
+      { name: 'Availability', value: formData.availability },
+      { name: 'Address', value: formData.address }
+    ];
+
+    for (const f of requiredFields) {
+      if (!f.value || String(f.value).trim() === '') {
+        toast.error(`${f.name} is required`);
+        return;
+      }
+    }
+
+    if (!uploadedFiles.photo || !uploadedFiles.aadharCard || !uploadedFiles.panCard) {
+      toast.error('Please upload required documents (photo, Aadhar, PAN).');
+      return;
+    }
+
     setSubmitted(true);
+
+    try {
+      const envBase = ((import.meta as any).env?.VITE_API_BASE as string) || '';
+      const hasEnvBase = Boolean(envBase && envBase.trim());
+
+      let url: string;
+      if (hasEnvBase) {
+        url = `${envBase.replace(/\/$/, '')}/api/workers`;
+      } else if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        url = '/api/workers';
+      } else {
+        url = 'https://quick-security-backend.onrender.com/api/workers';
+      }
+
+      const body = new FormData();
+      body.append('full_name', formData.fullName);
+      body.append('phone', formData.phone);
+      body.append('email', formData.email);
+      body.append('address', formData.address);
+      body.append('city', formData.city);
+      body.append('service_type', formData.serviceType);
+      body.append('experience', formData.experience);
+      body.append('certifications', formData.certifications);
+      body.append('availability', formData.availability);
+      body.append('additional_info', formData.additionalInfo);
+
+      body.append('aadhar_card', uploadedFiles.aadharCard!);
+      body.append('pan_card', uploadedFiles.panCard!);
+      body.append('photo', uploadedFiles.photo!);
+
+      const res = await fetch(url, {
+        method: 'POST',
+        body
+      });
+
+      let data: any = {};
+      try {
+        data = await res.json();
+      } catch {
+        data = null;
+      }
+
+      if (!res.ok) {
+        toast.error(data?.message || 'Failed to submit application');
+      } else {
+        toast.success(data?.message || 'Application submitted');
+      }
+
+    } catch (err: any) {
+      toast.error(err?.message || 'Error submitting form');
+    }
+
     setTimeout(() => {
       setSubmitted(false);
       setFormData({
@@ -71,7 +148,7 @@ export function WorkerSignupPage() {
         panCard: null,
         photo: null
       });
-    }, 4000);
+    }, 3000);
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, fileType: 'aadharCard' | 'panCard' | 'photo') => {
@@ -145,7 +222,7 @@ export function WorkerSignupPage() {
                 ))}
               </ul>
 
-              <div 
+              <div
                 className="mt-8 p-6 rounded-xl"
                 style={{ backgroundColor: '#a8dadc' }}
               >
@@ -199,6 +276,7 @@ export function WorkerSignupPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
                 onSubmit={handleSubmit}
+                noValidate
                 className="bg-white rounded-2xl p-8 md:p-12 shadow-xl"
               >
                 <h3 style={{ color: '#1d3557' }} className="mb-8">
@@ -209,11 +287,10 @@ export function WorkerSignupPage() {
                   {/* Full Name */}
                   <div className="relative">
                     <label
-                      className={`absolute left-4 transition-all duration-300 pointer-events-none ${
-                        focusedField === 'fullName' || formData.fullName
+                      className={`absolute left-4 transition-all duration-300 pointer-events-none ${focusedField === 'fullName' || formData.fullName
                           ? 'top-2 text-xs'
                           : 'top-5 text-base'
-                      }`}
+                        }`}
                       style={{ color: focusedField === 'fullName' ? '#1d3557' : '#457b9d' }}
                     >
                       <User className="inline w-4 h-4 mr-2" />
@@ -238,11 +315,10 @@ export function WorkerSignupPage() {
                   {/* Phone */}
                   <div className="relative">
                     <label
-                      className={`absolute left-4 transition-all duration-300 pointer-events-none ${
-                        focusedField === 'phone' || formData.phone
+                      className={`absolute left-4 transition-all duration-300 pointer-events-none ${focusedField === 'phone' || formData.phone
                           ? 'top-2 text-xs'
                           : 'top-5 text-base'
-                      }`}
+                        }`}
                       style={{ color: focusedField === 'phone' ? '#1d3557' : '#457b9d' }}
                     >
                       <Phone className="inline w-4 h-4 mr-2" />
@@ -267,11 +343,10 @@ export function WorkerSignupPage() {
                   {/* Email */}
                   <div className="relative">
                     <label
-                      className={`absolute left-4 transition-all duration-300 pointer-events-none ${
-                        focusedField === 'email' || formData.email
+                      className={`absolute left-4 transition-all duration-300 pointer-events-none ${focusedField === 'email' || formData.email
                           ? 'top-2 text-xs'
                           : 'top-5 text-base'
-                      }`}
+                        }`}
                       style={{ color: focusedField === 'email' ? '#1d3557' : '#457b9d' }}
                     >
                       <Mail className="inline w-4 h-4 mr-2" />
@@ -296,11 +371,10 @@ export function WorkerSignupPage() {
                   {/* City */}
                   <div className="relative">
                     <label
-                      className={`absolute left-4 transition-all duration-300 pointer-events-none ${
-                        focusedField === 'city' || formData.city
+                      className={`absolute left-4 transition-all duration-300 pointer-events-none ${focusedField === 'city' || formData.city
                           ? 'top-2 text-xs'
                           : 'top-5 text-base'
-                      }`}
+                        }`}
                       style={{ color: focusedField === 'city' ? '#1d3557' : '#457b9d' }}
                     >
                       <MapPin className="inline w-4 h-4 mr-2" />
@@ -421,11 +495,10 @@ export function WorkerSignupPage() {
                 {/* Address */}
                 <div className="relative mb-6">
                   <label
-                    className={`absolute left-4 transition-all duration-300 pointer-events-none ${
-                      focusedField === 'address' || formData.address
+                    className={`absolute left-4 transition-all duration-300 pointer-events-none ${focusedField === 'address' || formData.address
                         ? 'top-2 text-xs'
                         : 'top-5 text-base'
-                    }`}
+                      }`}
                     style={{ color: focusedField === 'address' ? '#1d3557' : '#457b9d' }}
                   >
                     <MapPin className="inline w-4 h-4 mr-2" />
@@ -450,11 +523,10 @@ export function WorkerSignupPage() {
                 {/* Certifications */}
                 <div className="relative mb-6">
                   <label
-                    className={`absolute left-4 transition-all duration-300 pointer-events-none ${
-                      focusedField === 'certifications' || formData.certifications
+                    className={`absolute left-4 transition-all duration-300 pointer-events-none ${focusedField === 'certifications' || formData.certifications
                         ? 'top-2 text-xs'
                         : 'top-5 text-base'
-                    }`}
+                      }`}
                     style={{ color: focusedField === 'certifications' ? '#1d3557' : '#457b9d' }}
                   >
                     <FileText className="inline w-4 h-4 mr-2" />
@@ -481,7 +553,7 @@ export function WorkerSignupPage() {
                   <h4 style={{ color: '#1d3557' }} className="mb-4">
                     Upload Documents
                   </h4>
-                  
+
                   <div className="grid md:grid-cols-3 gap-6">
                     {/* Aadhar Card Upload */}
                     <div className="relative">
@@ -496,7 +568,6 @@ export function WorkerSignupPage() {
                         type="file"
                         accept="image/*,.pdf"
                         onChange={(e) => handleFileUpload(e, 'aadharCard')}
-                        required
                         className="hidden"
                         id="aadhar-upload"
                       />
@@ -539,7 +610,6 @@ export function WorkerSignupPage() {
                         type="file"
                         accept="image/*,.pdf"
                         onChange={(e) => handleFileUpload(e, 'panCard')}
-                        required
                         className="hidden"
                         id="pan-upload"
                       />
@@ -582,7 +652,6 @@ export function WorkerSignupPage() {
                         type="file"
                         accept="image/*"
                         onChange={(e) => handleFileUpload(e, 'photo')}
-                        required
                         className="hidden"
                         id="photo-upload"
                       />
@@ -617,11 +686,10 @@ export function WorkerSignupPage() {
                 {/* Additional Info */}
                 <div className="relative mb-8">
                   <label
-                    className={`absolute left-4 transition-all duration-300 pointer-events-none ${
-                      focusedField === 'additionalInfo' || formData.additionalInfo
+                    className={`absolute left-4 transition-all duration-300 pointer-events-none ${focusedField === 'additionalInfo' || formData.additionalInfo
                         ? 'top-2 text-xs'
                         : 'top-5 text-base'
-                    }`}
+                      }`}
                     style={{ color: focusedField === 'additionalInfo' ? '#1d3557' : '#457b9d' }}
                   >
                     Additional Information (Optional)

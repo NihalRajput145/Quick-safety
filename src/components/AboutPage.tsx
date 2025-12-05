@@ -1,6 +1,7 @@
 import { motion } from 'motion/react';
 import { Target, Eye, Award, Users, TrendingUp, Heart } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
+import about from '../img/about.jpg';
 
 export function AboutPage() {
   const stats = [
@@ -132,7 +133,7 @@ export function AboutPage() {
               className="relative h-96 rounded-2xl overflow-hidden shadow-xl"
             >
               <ImageWithFallback
-                src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=800&h=600&fit=crop"
+                src={about}
                 alt="Team working together"
                 className="w-full h-full object-cover"
               />

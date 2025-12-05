@@ -1,4 +1,5 @@
 import { Shield, Phone, Mail, MapPin, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
+import logo from '../img/logo1.png';
 
 interface FooterProps {
   onNavigate: (page: string) => void;
@@ -14,7 +15,11 @@ export function Footer({ onNavigate }: FooterProps) {
           {/* Logo and Description */}
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <Shield className="w-10 h-10" fill="white" />
+              <img
+                src={logo}
+                alt="Quick Safety Service Logo"
+                className="w-12 h-12 object-contain"
+              />
               <span className="font-bold text-xl">Quick Safety Service</span>
             </div>
             <p className="text-white/80 mb-4">
@@ -41,7 +46,7 @@ export function Footer({ onNavigate }: FooterProps) {
             <h4 className="mb-4">Quick Links</h4>
             <ul className="space-y-3">
               <li>
-                <button 
+                <button
                   onClick={() => onNavigate('home')}
                   className="text-white/80 hover:text-white transition-colors duration-300"
                 >
@@ -49,7 +54,7 @@ export function Footer({ onNavigate }: FooterProps) {
                 </button>
               </li>
               <li>
-                <button 
+                <button
                   onClick={() => onNavigate('services')}
                   className="text-white/80 hover:text-white transition-colors duration-300"
                 >
@@ -57,7 +62,7 @@ export function Footer({ onNavigate }: FooterProps) {
                 </button>
               </li>
               <li>
-                <button 
+                <button
                   onClick={() => onNavigate('booking')}
                   className="text-white/80 hover:text-white transition-colors duration-300"
                 >
@@ -65,7 +70,7 @@ export function Footer({ onNavigate }: FooterProps) {
                 </button>
               </li>
               <li>
-                <button 
+                <button
                   onClick={() => onNavigate('about')}
                   className="text-white/80 hover:text-white transition-colors duration-300"
                 >
@@ -73,7 +78,7 @@ export function Footer({ onNavigate }: FooterProps) {
                 </button>
               </li>
               <li>
-                <button 
+                <button
                   onClick={() => onNavigate('contact')}
                   className="text-white/80 hover:text-white transition-colors duration-300"
                 >

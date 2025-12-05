@@ -1,5 +1,5 @@
 import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, easeInOut, easeOut, easeIn } from "motion/react";
 import { useState, useEffect } from 'react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 
@@ -38,6 +38,7 @@ export function Testimonials() {
     }
   ];
 
+  // Auto-slide
   useEffect(() => {
     const timer = setInterval(() => {
       setDirection(1);
@@ -47,6 +48,7 @@ export function Testimonials() {
     return () => clearInterval(timer);
   }, [testimonials.length]);
 
+  // Manual prev / next
   const handlePrev = () => {
     setDirection(-1);
     setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
@@ -57,24 +59,40 @@ export function Testimonials() {
     setCurrentIndex((prev) => (prev + 1) % testimonials.length);
   };
 
+  // ⭐ UPDATED Motion v11 Variants (valid, smooth, error-free)
   const variants = {
     enter: (direction: number) => ({
-      x: direction > 0 ? 1000 : -1000,
-      opacity: 0
+      x: direction > 0 ? 80 : -80,
+      opacity: 0,
+      scale: 0.98,
     }),
+
     center: {
       x: 0,
-      opacity: 1
+      opacity: 1,
+      scale: 1,
+      transition: {
+        duration: 0.45,
+        ease: easeOut,
+      }
     },
+
     exit: (direction: number) => ({
-      x: direction > 0 ? -1000 : 1000,
-      opacity: 0
+      x: direction > 0 ? -80 : 80,
+      opacity: 0,
+      scale: 0.98,
+      transition: {
+        duration: 0.35,
+        ease: easeIn,
+      }
     })
   };
 
   return (
     <section className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
       <div className="max-w-7xl mx-auto">
+
+        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -90,9 +108,10 @@ export function Testimonials() {
           </p>
         </motion.div>
 
+        {/* Slider Section */}
         <div className="relative max-w-4xl mx-auto">
-          <div className="relative overflow-hidden" style={{ minHeight: '300px' }}>
-            <AnimatePresence initial={false} custom={direction} mode="wait">
+          <div className="relative overflow-hidden" style={{ minHeight: "320px" }}>
+            <AnimatePresence initial={false}>
               <motion.div
                 key={currentIndex}
                 custom={direction}
@@ -100,39 +119,31 @@ export function Testimonials() {
                 initial="enter"
                 animate="center"
                 exit="exit"
-                transition={{
-                  x: { type: "spring", stiffness: 300, damping: 30 },
-                  opacity: { duration: 0.2 }
-                }}
-                className="bg-white rounded-2xl p-8 md:p-12 shadow-xl w-full"
-                style={{ border: '1px solid #e5e5e5' }}
+                className="absolute inset-0 bg-white rounded-2xl p-8 md:p-12 shadow-xl border border-gray-200"
               >
                 <div className="flex flex-col md:flex-row items-center gap-8">
+
+                  {/* Avatar */}
                   <ImageWithFallback
                     src={testimonials[currentIndex].image}
                     alt={testimonials[currentIndex].name}
                     className="w-24 h-24 rounded-full object-cover flex-shrink-0"
                   />
-                  
+
+                  {/* Content */}
                   <div className="flex-1 text-center md:text-left">
                     <div className="flex justify-center md:justify-start gap-1 mb-4">
                       {Array.from({ length: testimonials[currentIndex].rating }).map((_, i) => (
                         <Star key={i} className="w-5 h-5 fill-current" style={{ color: '#ffc107' }} />
                       ))}
                     </div>
-                    
+
                     <p className="text-lg mb-4" style={{ color: '#1d3557' }}>
                       "{testimonials[currentIndex].text}"
                     </p>
-                    
-                    <div>
-                      <h4 style={{ color: '#1d3557' }}>
-                        {testimonials[currentIndex].name}
-                      </h4>
-                      <p style={{ color: '#457b9d' }}>
-                        {testimonials[currentIndex].role}
-                      </p>
-                    </div>
+
+                    <h4 style={{ color: '#1d3557' }}>{testimonials[currentIndex].name}</h4>
+                    <p style={{ color: '#457b9d' }}>{testimonials[currentIndex].role}</p>
                   </div>
                 </div>
               </motion.div>
@@ -142,7 +153,7 @@ export function Testimonials() {
           {/* Navigation Buttons */}
           <button
             onClick={handlePrev}
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-12 p-3 rounded-full bg-white shadow-lg hover:shadow-xl transition-all duration-300"
+            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-12 p-3 rounded-full bg-white shadow-lg hover:shadow-xl"
             style={{ color: '#1d3557' }}
           >
             <ChevronLeft className="w-6 h-6" />
@@ -150,13 +161,13 @@ export function Testimonials() {
 
           <button
             onClick={handleNext}
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-12 p-3 rounded-full bg-white shadow-lg hover:shadow-xl transition-all duration-300"
+            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-12 p-3 rounded-full bg-white shadow-lg hover:shadow-xl"
             style={{ color: '#1d3557' }}
           >
             <ChevronRight className="w-6 h-6" />
           </button>
 
-          {/* Dots Indicator */}
+          {/* Dots */}
           <div className="flex justify-center gap-2 mt-8">
             {testimonials.map((_, index) => (
               <button
@@ -165,7 +176,7 @@ export function Testimonials() {
                   setDirection(index > currentIndex ? 1 : -1);
                   setCurrentIndex(index);
                 }}
-                className="w-2 h-2 rounded-full transition-all duration-300"
+                className="w-2 h-2 rounded-full transition-all"
                 style={{
                   backgroundColor: index === currentIndex ? '#1d3557' : '#a8dadc',
                   transform: index === currentIndex ? 'scale(1.5)' : 'scale(1)'

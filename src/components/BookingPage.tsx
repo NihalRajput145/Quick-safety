@@ -1,5 +1,6 @@
 import { motion } from 'motion/react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { Calendar, Clock, MapPin, User, Phone, Mail, FileText, Sparkles } from 'lucide-react';
 
 export function BookingPage() {
@@ -37,21 +38,72 @@ export function BookingPage() {
     'Monthly'
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const payload = {
+      full_name: formData.name,
+      phone: formData.phone,
+      email: formData.email,
+      service_type: formData.serviceType,
+      date: formData.date,
+      time: formData.time,
+      duration: formData.duration,
+      address: formData.address,
+      notes: formData.notes
+    };
+
     setSubmitted(true);
+
+    try {
+      const envBase = ((import.meta as any).env?.VITE_API_BASE as string) || '';
+      const hasEnvBase = Boolean(envBase && envBase.trim());
+      let url: string;
+
+      if (hasEnvBase) {
+        url = `${envBase.replace(/\/$/, '')}/api/bookings`;
+      } else if (
+        typeof window !== "undefined" &&
+        (window.location.hostname === "localhost" ||
+          window.location.hostname === "127.0.0.1")
+      ) {
+        url = "/api/bookings";
+      } else {
+        url = "https://quick-security-backend.onrender.com/api/bookings";
+      }
+
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        toast.error(data?.message || "Failed to submit booking.");
+        console.error("Booking error:", data);
+      } else {
+        toast.success(data?.message || "Booking submitted!");
+      }
+
+    } catch (err: any) {
+      toast.error(err?.message || "Error submitting booking.");
+      console.error(err);
+    }
+
     setTimeout(() => {
       setSubmitted(false);
       setFormData({
-        name: '',
-        phone: '',
-        email: '',
-        address: '',
-        serviceType: '',
-        date: '',
-        time: '',
-        duration: '',
-        notes: ''
+        name: "",
+        phone: "",
+        email: "",
+        address: "",
+        serviceType: "",
+        date: "",
+        time: "",
+        duration: "",
+        notes: ""
       });
     }, 3000);
   };
@@ -112,11 +164,10 @@ export function BookingPage() {
               {/* Name Field */}
               <div className="relative">
                 <label
-                  className={`absolute left-4 transition-all duration-300 pointer-events-none ${
-                    focusedField === 'name' || formData.name
-                      ? 'top-2 text-xs'
-                      : 'top-5 text-base'
-                  }`}
+                  className={`absolute left-4 transition-all duration-300 pointer-events-none ${focusedField === 'name' || formData.name
+                    ? 'top-2 text-xs'
+                    : 'top-5 text-base'
+                    }`}
                   style={{ color: focusedField === 'name' ? '#1d3557' : '#457b9d' }}
                 >
                   <User className="inline w-4 h-4 mr-2" />
@@ -141,11 +192,10 @@ export function BookingPage() {
               {/* Phone Field */}
               <div className="relative">
                 <label
-                  className={`absolute left-4 transition-all duration-300 pointer-events-none ${
-                    focusedField === 'phone' || formData.phone
-                      ? 'top-2 text-xs'
-                      : 'top-5 text-base'
-                  }`}
+                  className={`absolute left-4 transition-all duration-300 pointer-events-none ${focusedField === 'phone' || formData.phone
+                    ? 'top-2 text-xs'
+                    : 'top-5 text-base'
+                    }`}
                   style={{ color: focusedField === 'phone' ? '#1d3557' : '#457b9d' }}
                 >
                   <Phone className="inline w-4 h-4 mr-2" />
@@ -170,11 +220,10 @@ export function BookingPage() {
               {/* Email Field */}
               <div className="relative">
                 <label
-                  className={`absolute left-4 transition-all duration-300 pointer-events-none ${
-                    focusedField === 'email' || formData.email
-                      ? 'top-2 text-xs'
-                      : 'top-5 text-base'
-                  }`}
+                  className={`absolute left-4 transition-all duration-300 pointer-events-none ${focusedField === 'email' || formData.email
+                    ? 'top-2 text-xs'
+                    : 'top-5 text-base'
+                    }`}
                   style={{ color: focusedField === 'email' ? '#1d3557' : '#457b9d' }}
                 >
                   <Mail className="inline w-4 h-4 mr-2" />
@@ -314,11 +363,10 @@ export function BookingPage() {
             {/* Address Field */}
             <div className="relative mb-6">
               <label
-                className={`absolute left-4 transition-all duration-300 pointer-events-none ${
-                  focusedField === 'address' || formData.address
-                    ? 'top-2 text-xs'
-                    : 'top-5 text-base'
-                }`}
+                className={`absolute left-4 transition-all duration-300 pointer-events-none ${focusedField === 'address' || formData.address
+                  ? 'top-2 text-xs'
+                  : 'top-5 text-base'
+                  }`}
                 style={{ color: focusedField === 'address' ? '#1d3557' : '#457b9d' }}
               >
                 <MapPin className="inline w-4 h-4 mr-2" />
@@ -343,11 +391,10 @@ export function BookingPage() {
             {/* Notes Field */}
             <div className="relative mb-8">
               <label
-                className={`absolute left-4 transition-all duration-300 pointer-events-none ${
-                  focusedField === 'notes' || formData.notes
-                    ? 'top-2 text-xs'
-                    : 'top-5 text-base'
-                }`}
+                className={`absolute left-4 transition-all duration-300 pointer-events-none ${focusedField === 'notes' || formData.notes
+                  ? 'top-2 text-xs'
+                  : 'top-5 text-base'
+                  }`}
                 style={{ color: focusedField === 'notes' ? '#1d3557' : '#457b9d' }}
               >
                 <FileText className="inline w-4 h-4 mr-2" />
