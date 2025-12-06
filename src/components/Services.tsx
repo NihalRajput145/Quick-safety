@@ -74,7 +74,7 @@ export function Services({ onNavigate, isFullPage = false }: ServicesProps) {
           {services.map((service, index) => {
             const Icon = service.icon;
             const isHovered = hoveredCard === index;
-            
+
             return (
               <motion.div
                 key={index}
@@ -93,9 +93,7 @@ export function Services({ onNavigate, isFullPage = false }: ServicesProps) {
                 }}
               >
                 <motion.div
-                  animate={{
-                    scale: isHovered ? 1.1 : 1,
-                  }}
+                  animate={{ scale: isHovered ? 1.1 : 1 }}
                   transition={{ duration: 0.3 }}
                   className="mb-6"
                 >
@@ -118,7 +116,9 @@ export function Services({ onNavigate, isFullPage = false }: ServicesProps) {
 
                 {onNavigate && (
                   <button
-                    onClick={() => onNavigate('booking')}
+                    onClick={() =>
+                      onNavigate(`booking?service=${encodeURIComponent(service.title)}`)
+                    }
                     className="mt-6 px-6 py-2 rounded-lg transition-all duration-300"
                     style={{
                       backgroundColor: isHovered ? '#1d3557' : '#a8dadc',
